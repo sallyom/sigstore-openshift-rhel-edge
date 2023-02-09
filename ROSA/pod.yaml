@@ -5,7 +5,7 @@ metadata:
   labels:
     app: signer-identity
   name: signer-identity
-  namespace: sotest
+  namespace: sigstoretest
 spec:
   volumes:
   - name: cosign-init

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: signer-identity
-  namespace: sotest
+  namespace: sigstoretest
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::077896975944:role/poc-sigstore-signer-role"
     # optional: Defaults to "sts.amazonaws.com" if not set
