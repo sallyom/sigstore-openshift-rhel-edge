@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: signer-identity
+  namespace: sotest
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::077896975944:role/poc-sigstore-signer-role"
+    # optional: Defaults to "sts.amazonaws.com" if not set
+    eks.amazonaws.com/audience: "sigstore"
+    # optional: When set to "true", adds AWS_STS_REGIONAL_ENDPOINTS env var
+    #   to containers
+    eks.amazonaws.com/sts-regional-endpoints: "true"
+    # optional: Defaults to 86400 for expirationSeconds if not set
+    #   Note: This value can be overwritten if specified in the pod
+    #         annotation as shown in the next step.
+    eks.amazonaws.com/token-expiration: "86400"

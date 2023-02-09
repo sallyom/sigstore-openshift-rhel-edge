@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+  labels:
+    app: signer-identity
+  name: signer-identity
+  namespace: sotest
+spec:
+  volumes:
+  - name: cosign-init
+    emptyDir:
+      sizeLimit: 100Mi
+  containers:
+  - image: quay.io/sallyom/cosign:latest
+    volumeMounts:
+      - mountPath: /cosign
+        name: cosign-init
+    securityContext:
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+    command: ["/bin/sh"]
+    args: ["-c", "sleep 86400"]
+    imagePullPolicy: IfNotPresent
+    name: cosign
+    env:
+    - name: HOME 
+      value: /cosign
+    - name: OIDC_ISSUER 
+      value: https://rh-oidc.s3.us-east-1.amazonaws.com/21o4ml1f5kchd6ee9nmh5dhc6efqba38
+    - name: TUF_URL 
+      value: https://tuf.apps.open-svc-sts.k1wl.p1.openshiftapps.com
+    - name: REKOR_URL 
+      value: https://rekor.apps.open-svc-sts.k1wl.p1.openshiftapps.com
+    - name: FULCIO_URL
+      value: https://fulcio.apps.open-svc-sts.k1wl.p1.openshiftapps.com
+  - image: amazon/aws-cli
+    securityContext:
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+    command: ["/bin/sh"]
+    args: ["-c", "sleep 86400"]
+    imagePullPolicy: IfNotPresent
+    name: signer-identity
+    env:
+    - name: AWS_ROLE_SESSION_NAME
+      value: signer-identity-session
+    - name: AWS_REGION
+      value: us-east-1
+    ports:
+    - containerPort: 80
+      name: http
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+  dnsPolicy: ClusterFirst
+  serviceAccount: signer-identity #<--The pod must run with the sa
+  serviceAccountName: signer-identity
