@@ -5,17 +5,37 @@ metadata:
   labels:
     app: signer-identity
   name: signer-identity
-  namespace: sigstoretest
+  #namespace: sotest
 spec:
   volumes:
+  - name: cosign-login
+    secret:
+      secretName: cosign-login
+      items:
+      - key: config.json
+        path: config.json
+  - name: cosign-keypair
+    secret:
+      secretName: cosign-keypair
+      items:
+      - key: cosign.password
+        path: cosign.password
+      - key: cosign.pub
+        path: cosign.pub
+      - key: cosign.key
+        path: cosign.key
   - name: cosign-init
     emptyDir:
       sizeLimit: 100Mi
   containers:
-  - image: quay.io/sallyom/cosign:latest
+  - image: quay.io/sallyom/cosign:v2
     volumeMounts:
       - mountPath: /cosign
         name: cosign-init
+      - mountPath: /cosign/.docker
+        name: cosign-login
+      - mountPath: /cosign/key
+        name: cosign-keypair
     securityContext:
       allowPrivilegeEscalation: false
       seccompProfile:
@@ -23,9 +43,9 @@ spec:
       capabilities:
         drop:
           - ALL
-    command: ["/bin/sh"]
-    args: ["-c", "sleep 86400"]
-    imagePullPolicy: IfNotPresent
+    #command: ["/bin/sh"]
+    #args: ["-c", "sleep 86400"]
+    imagePullPolicy: Always
     name: cosign
     env:
     - name: HOME 
@@ -38,6 +58,10 @@ spec:
       value: https://rekor.apps.open-svc-sts.k1wl.p1.openshiftapps.com
     - name: FULCIO_URL
       value: https://fulcio.apps.open-svc-sts.k1wl.p1.openshiftapps.com
+    - name: COSIGN_PASSWORD
+      value: secure # If using a signing key, this must match the password for the cosign key pair
+    - name: COSIGN_EXPERIMENTAL
+      value: "1"
   - image: amazon/aws-cli
     securityContext:
       allowPrivilegeEscalation: false

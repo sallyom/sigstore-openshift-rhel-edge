@@ -2,9 +2,9 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: signer-identity
-  namespace: sigstoretest
+  #namespace: sigstore-test
   annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::077896975944:role/poc-sigstore-signer-role"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::077896975944:role/077896975944:role/poc-irsa-s3-s3-sample-s3-sample-1"
     # optional: Defaults to "sts.amazonaws.com" if not set
     eks.amazonaws.com/audience: "sigstore"
     # optional: When set to "true", adds AWS_STS_REGIONAL_ENDPOINTS env var
